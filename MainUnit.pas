@@ -38,11 +38,15 @@ Type
     procedure FormCreate(Sender: TObject);
     procedure AnswerButtonClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
     Private
         { Private declarations }
     Public
         { Public declarations }
     End;
+
+Const
+    AllowedCharSet: Set Of Char = ['0'..'9', #8];
 
 Var
     MainForm: TMainForm;
@@ -67,6 +71,12 @@ begin
     AnswerLabel.Visible := False;
     AnswerButton.Enabled := False;
 
+end;
+
+procedure TMainForm.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+    If Not (Key In AllowedCharSet) Then
+        Key := #0;
 end;
 
 Procedure TMainForm.InstructionNClick(Sender: TObject);

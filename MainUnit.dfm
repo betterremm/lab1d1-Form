@@ -16,6 +16,7 @@ object MainForm: TMainForm
   Position = poScreenCenter
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnKeyPress = FormKeyPress
   TextHeight = 15
   object FirstAngleLabel: TLabel
     Left = 72

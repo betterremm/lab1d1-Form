@@ -5,7 +5,7 @@ uses
   MainUnit in 'MainUnit.pas' {MainForm},
   DeveloperUnit in 'DeveloperUnit.pas' {DeveloperForm},
   InstructionUnit in 'InstructionUnit.pas' {InstructionForm},
-  UnitÑäùûó in 'UnitÑäùûó.pas' {CloseForm};
+  UnitClose in 'UnitClose.pas' {CloseForm};
 
 {$R *.res}
 
