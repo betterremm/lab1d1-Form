@@ -65,7 +65,7 @@ begin
     Constraints.MinHeight := Height;
     Constraints.MaxHeight := Height;
     AnswerLabel.Visible := False;
-    AnswerButton.Enabled := False;
+    AnswerButton.Enabled := True;
 
 end;
 
