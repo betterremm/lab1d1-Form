@@ -46,6 +46,8 @@ object MainForm: TMainForm
     Height = 23
     Hint = '1-178'
     TabOrder = 0
+    OnChange = FirstAngleEditChange
+    OnKeyPress = FirstAngleEditKeyPress
   end
   object SecondAngleEdit: TEdit
     Left = 72
@@ -54,6 +56,8 @@ object MainForm: TMainForm
     Height = 23
     Hint = '1-178'
     TabOrder = 1
+    OnChange = SecondAngleEditChange
+    OnKeyPress = SecondAngleEditKeyPress
   end
   object AnswerButton: TButton
     Left = 320
@@ -71,9 +75,11 @@ object MainForm: TMainForm
       Caption = #1060#1072#1081#1083
       object OpenN: TMenuItem
         Caption = #1054#1090#1082#1088#1099#1090#1100
+        OnClick = OpenNClick
       end
       object SaveN: TMenuItem
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+        OnClick = SaveNClick
       end
       object N0: TMenuItem
         Caption = '-'
@@ -90,5 +96,15 @@ object MainForm: TMainForm
       Caption = #1054' '#1088#1072#1079#1088#1072#1073#1086#1090#1095#1080#1082#1077
       OnClick = DeveloperNClick
     end
+  end
+  object OpenDialog: TOpenDialog
+    Filter = 'Text files (*.txt)|*.txt'
+    Left = 640
+    Top = 88
+  end
+  object SaveDialog: TSaveDialog
+    Filter = 'Text files (*.txt)|*.txt'
+    Left = 640
+    Top = 144
   end
 end
