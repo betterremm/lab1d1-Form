@@ -18,6 +18,8 @@ Type
     TDeveloperForm = Class(TForm)
         DevLabel: TLabel;
     CloseDevButton: TButton;
+    procedure CloseDevButtonClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     Private
         { Private declarations }
     Public
@@ -30,5 +32,18 @@ Var
 Implementation
 
 {$R *.dfm}
+
+procedure TDeveloperForm.CloseDevButtonClick(Sender: TObject);
+begin
+    DeveloperForm.Close;
+end;
+
+procedure TDeveloperForm.FormCreate(Sender: TObject);
+begin
+    Constraints.MinWidth := Width;
+    Constraints.MaxWidth := Width;
+    Constraints.MinHeight := Height;
+    Constraints.MaxHeight := Height;
+end;
 
 End.

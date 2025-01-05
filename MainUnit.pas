@@ -33,8 +33,9 @@ Type
         FirstAngleEdit: TEdit;
         SecondAngleEdit: TEdit;
         AnswerButton: TButton;
-    OpenDialog: TOpenDialog;
-    SaveDialog: TSaveDialog;
+        OpenDialog: TOpenDialog;
+        SaveDialog: TSaveDialog;
+    Label1: TLabel;
         Procedure InstructionNClick(Sender: TObject);
         Procedure DeveloperNClick(Sender: TObject);
         Procedure FormCreate(Sender: TObject);
@@ -44,8 +45,11 @@ Type
         Procedure SecondAngleEditKeyPress(Sender: TObject; Var Key: Char);
         Procedure FirstAngleEditChange(Sender: TObject);
         Procedure SecondAngleEditChange(Sender: TObject);
-    procedure OpenNClick(Sender: TObject);
-    procedure SaveNClick(Sender: TObject);
+        Procedure OpenNClick(Sender: TObject);
+        Procedure SaveNClick(Sender: TObject);
+        Procedure ExitNClick(Sender: TObject);
+        Procedure FirstAngleEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
+        Procedure SecondAngleEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
     Private
         IsFirstEditFilled: Boolean;
         IsSecondEditFilled: Boolean;
@@ -55,8 +59,10 @@ Type
         { Public declarations }
     End;
 
-Var
+Const
     TAllowedKeys: Set Of Char = ['0' .. '9', #8];
+
+Var
     MainForm: TMainForm;
 
 Implementation
@@ -66,6 +72,7 @@ Implementation
 Procedure TMainForm.FirstAngleEditChange(Sender: TObject);
 Begin
     AnswerLabel.Visible := False;
+    SaveN.Enabled := False;
     If (FirstAngleEdit.Text <> '') And (FirstAngleEdit.Text <> '0') Then
     Begin
         IsFirstEditFilled := True;
@@ -84,10 +91,16 @@ Begin
     Else
         IsFirstEditFilled := False;
 
-    If (IsFirstEditFilled = True) And (IsSecondEditFilled = True) And (StrToInt(SecondAngleEdit.Text) + StrToInt(FirstAngleEdit.Text) < 180) Then
+    If (IsFirstEditFilled = True) And (IsSecondEditFilled = True) And
+        (StrToInt(SecondAngleEdit.Text) + StrToInt(FirstAngleEdit.Text) < 180) Then
         AnswerButton.Enabled := True
     Else
         AnswerButton.Enabled := False;
+End;
+
+Procedure TMainForm.FirstAngleEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
+Begin
+    Handled := True;
 End;
 
 Procedure TMainForm.FirstAngleEditKeyPress(Sender: TObject; Var Key: Char);
@@ -99,8 +112,24 @@ End;
 
 Procedure TMainForm.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
 Begin
-    If IsFileSaved = False Then
-    //TODO: HANDLE FILES PLSSSSS
+
+    If AnswerLabel.Visible And (IsFileSaved = False) Then
+        Repeat
+
+            ExitCode := MessageBox(MainForm.Handle, 'sohranit?', 'podtverzhdenie', MB_ICONQUESTION + MB_YESNOCANCEL);
+            If ExitCode = ID_Yes Then
+            Begin
+                SaveNClick(MainForm);
+                CanClose := True
+            End
+            Else
+                If ExitCode = ID_NO Then
+                    CanClose := True
+                Else
+                    If ExitCode = ID_CANCEL Then
+                        CanClose := False;
+
+        Until IsFileSaved Or (ExitCode = ID_NO) Or (ExitCode = ID_CANCEL);
 
 End;
 
@@ -115,6 +144,7 @@ Begin
     IsFirstEditFilled := False;
     IsSecondEditFilled := False;
     IsFileSaved := False;
+    SaveN.Enabled := False;
 
 End;
 
@@ -125,22 +155,100 @@ Begin
     InstructionForm := Nil;
 End;
 
-procedure TMainForm.OpenNClick(Sender: TObject);
-begin
+Procedure TMainForm.OpenNClick(Sender: TObject);
+Var
+    FilePath: String;
+    InputFile: TextFile;
+    Num1, Num2, ErrNum: Integer;
+Begin
     If OpenDialog.Execute() Then
-    //TODO OPENING
+    Begin
 
-end;
+        FilePath := OpenDialog.FileName;
+        If Not FilePath.EndsWith('.txt') Then
+            MessageBox(MainForm.Handle, 'TXTERR', 'pizda ne .txt', MB_ICONWARNING + MB_OK)
+        Else
+        Begin
+            {$I-}
+            AssignFile(InputFile, FilePath);
+            Reset(InputFile);
+            {$I+}
+            ErrNum := IOResult;
+            If ErrNum = 0 Then
+            Begin
+                {$I-}
+                ReadLn(InputFile, Num1);
+                ReadLn(InputFile, Num2);
+                {$I+}
+                ErrNum := IOResult;
+                If (ErrNum = 0) And EOF(InputFile) Then
+                Begin
+                    FirstAngleEdit.Text := IntToStr(Num1);
+                    SecondAngleEdit.Text := IntToStr(Num2);
+                End
+                Else
+                    If ErrNum = 106 { INVALID NUMBER } Then
+                        MessageBox(MainForm.Handle, 'Ne Chisla', 'pizda ne chisla', MB_ICONWARNING + MB_OK)
+                    Else
+                        If (ErrNum = 105) Or (ErrNum = 100) Or (ErrNum = 104) { NOT OPEN FOR OUTPUT } Then
+                            MessageBox(MainForm.Handle, 'FileErr', 'pizda ne otkrivayetsa', MB_ICONWARNING + MB_OK)
+                        Else
+                            If Not EOF(InputFile) And (ErrNum = 0) Then
+                                MessageBox(MainForm.Handle, 'TooMuch', 'pizda dohera infi', MB_ICONWARNING + MB_OK)
+                            Else
+                                MessageBox(MainForm.Handle, 'FileFatErr', 'pizda ne assignitsya', MB_ICONWARNING + MB_OK);
 
-procedure TMainForm.SaveNClick(Sender: TObject);
-begin
+            End
+            Else
+                MessageBox(MainForm.Handle, 'FileFatErr', 'pizda ne assignitsya', MB_ICONWARNING + MB_OK);
+            {$I-}
+            CloseFile(InputFile);
+            {$I+}
+        End;
+    End;
+
+End;
+
+Procedure TMainForm.SaveNClick(Sender: TObject);
+Var
+    FilePath: String;
+    OutputFile: TextFile;
+
+Begin
     If SaveDialog.Execute() Then
-    //TODO SAVING
-end;
+    Begin
+        FilePath := SaveDialog.FileName;
+        If Not FilePath.EndsWith('.txt') Then
+            MessageBox(MainForm.Handle, 'TXTERR', 'pizda ne .txt', MB_ICONWARNING + MB_OK)
+        Else
+        Begin
+            {$I-}
+            AssignFile(OutputFile, FilePath);
+            Rewrite(OutputFile);
+            {$I+}
+            If IOResult = 0 Then
+            Begin
+                Write(OutputFile, 'Первый угол - ');
+                WriteLn(OutputFile, FirstAngleEdit.Text);
+                Write(OutputFile, 'Второй угол - ');
+                WriteLn(OutputFile, SecondAngleEdit.Text);
+                Write(OutputFile, 'Результат - ');
+                WriteLn(OutputFile, AnswerLabel.Caption);
+                IsFileSaved := True;
+            End
+            Else
+                MessageBox(MainForm.Handle, 'FileErr', 'pizda ne sohranyaetsa', MB_ICONWARNING + MB_OK);
+        End;
+        {$I-}
+        CloseFile(OutputFile);
+        {$I+}
+    End;
+End;
 
 Procedure TMainForm.SecondAngleEditChange(Sender: TObject);
 Begin
     AnswerLabel.Visible := False;
+    SaveN.Enabled := False;
     If (SecondAngleEdit.Text <> '') And (SecondAngleEdit.Text <> '0') Then
     Begin
         IsSecondEditFilled := True;
@@ -159,11 +267,17 @@ Begin
     Else
         IsSecondEditFilled := False;
 
-    If (IsSecondEditFilled = True) And (IsFirstEditFilled = True) And (StrToInt(SecondAngleEdit.Text) + StrToInt(FirstAngleEdit.Text) < 180) Then
+    If (IsSecondEditFilled = True) And (IsFirstEditFilled = True) And
+        (StrToInt(SecondAngleEdit.Text) + StrToInt(FirstAngleEdit.Text) < 180) Then
         AnswerButton.Enabled := True
     Else
         AnswerButton.Enabled := False;
 
+End;
+
+Procedure TMainForm.SecondAngleEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
+Begin
+    Handled := True;
 End;
 
 Procedure TMainForm.SecondAngleEditKeyPress(Sender: TObject; Var Key: Char);
@@ -181,6 +295,7 @@ Begin
     Else
         AnswerLabel.Caption := 'Треугольник неравнобедренный!';
     AnswerLabel.Visible := True;
+    SaveN.Enabled := True;
 End;
 
 Procedure TMainForm.DeveloperNClick(Sender: TObject);
@@ -188,6 +303,11 @@ Begin
     DeveloperForm.ShowModal();
     DeveloperForm.Destroy();
     DeveloperForm := Nil;
+End;
+
+Procedure TMainForm.ExitNClick(Sender: TObject);
+Begin
+    MainForm.Close;
 End;
 
 End.

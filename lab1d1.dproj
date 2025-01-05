@@ -135,9 +135,6 @@
             <Form>InstructionForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="UnitClose.pas">
-            <Form>CloseForm</Form>
-        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

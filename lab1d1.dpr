@@ -4,8 +4,7 @@ uses
   Vcl.Forms,
   MainUnit in 'MainUnit.pas' {MainForm},
   DeveloperUnit in 'DeveloperUnit.pas' {DeveloperForm},
-  InstructionUnit in 'InstructionUnit.pas' {InstructionForm},
-  UnitClose in 'UnitClose.pas' {CloseForm};
+  InstructionUnit in 'InstructionUnit.pas' {InstructionForm};
 
 {$R *.res}
 
@@ -15,6 +14,5 @@ begin
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TDeveloperForm, DeveloperForm);
   Application.CreateForm(TInstructionForm, InstructionForm);
-  Application.CreateForm(TCloseForm, CloseForm);
   Application.Run;
 end.
