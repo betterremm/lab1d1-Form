@@ -50,6 +50,8 @@ Type
         Procedure ExitNClick(Sender: TObject);
         Procedure FirstAngleEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
         Procedure SecondAngleEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
+    function FormHelp(Command: Word; Data: THelpEventData;
+      var CallHelp: Boolean): Boolean;
     Private
         IsFirstEditFilled: Boolean;
         IsSecondEditFilled: Boolean;
@@ -140,7 +142,7 @@ Begin
     Constraints.MinHeight := Height;
     Constraints.MaxHeight := Height;
     AnswerLabel.Visible := False;
-    AnswerButton.Enabled := True;
+    AnswerButton.Enabled := False;
     IsFirstEditFilled := False;
     IsSecondEditFilled := False;
     IsFileSaved := False;
@@ -148,11 +150,15 @@ Begin
 
 End;
 
+function TMainForm.FormHelp(Command: Word; Data: THelpEventData;
+  var CallHelp: Boolean): Boolean;
+begin
+    CallHelp := False;
+end;
+
 Procedure TMainForm.InstructionNClick(Sender: TObject);
 Begin
     InstructionForm.ShowModal();
-    InstructionForm.Destroy();
-    InstructionForm := Nil;
 End;
 
 Procedure TMainForm.OpenNClick(Sender: TObject);
@@ -301,8 +307,6 @@ End;
 Procedure TMainForm.DeveloperNClick(Sender: TObject);
 Begin
     DeveloperForm.ShowModal();
-    DeveloperForm.Destroy();
-    DeveloperForm := Nil;
 End;
 
 Procedure TMainForm.ExitNClick(Sender: TObject);
