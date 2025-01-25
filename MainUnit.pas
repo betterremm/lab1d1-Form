@@ -118,7 +118,7 @@ Begin
     If AnswerLabel.Visible And (IsFileSaved = False) Then
         Repeat
 
-            ExitCode := MessageBox(MainForm.Handle, 'sohranit?', 'podtverzhdenie', MB_ICONQUESTION + MB_YESNOCANCEL);
+            ExitCode := MessageBox(MainForm.Handle, 'Вы не сохранили данные.', 'Желаете сохранить?', MB_ICONQUESTION + MB_YESNOCANCEL);
             If ExitCode = ID_Yes Then
             Begin
                 SaveNClick(MainForm);
@@ -154,6 +154,8 @@ function TMainForm.FormHelp(Command: Word; Data: THelpEventData;
   var CallHelp: Boolean): Boolean;
 begin
     CallHelp := False;
+    FormHelp := True;
+
 end;
 
 Procedure TMainForm.InstructionNClick(Sender: TObject);
@@ -172,7 +174,7 @@ Begin
 
         FilePath := OpenDialog.FileName;
         If Not FilePath.EndsWith('.txt') Then
-            MessageBox(MainForm.Handle, 'TXTERR', 'pizda ne .txt', MB_ICONWARNING + MB_OK)
+            MessageBox(MainForm.Handle, 'Введите путь к другому файлу', 'Файл не ''.txt''', MB_ICONWARNING + MB_OK)
         Else
         Begin
             {$I-}
@@ -194,19 +196,19 @@ Begin
                 End
                 Else
                     If ErrNum = 106 { INVALID NUMBER } Then
-                        MessageBox(MainForm.Handle, 'Ne Chisla', 'pizda ne chisla', MB_ICONWARNING + MB_OK)
+                        MessageBox(MainForm.Handle, 'Введите путь к другому файлу', 'Данные в файле не являются числами', MB_ICONWARNING + MB_OK)
                     Else
                         If (ErrNum = 105) Or (ErrNum = 100) Or (ErrNum = 104) { NOT OPEN FOR OUTPUT } Then
-                            MessageBox(MainForm.Handle, 'FileErr', 'pizda ne otkrivayetsa', MB_ICONWARNING + MB_OK)
+                            MessageBox(MainForm.Handle, 'Введите путь к другому файлу', 'Ошибка при открытии вайла', MB_ICONWARNING + MB_OK)
                         Else
                             If Not EOF(InputFile) And (ErrNum = 0) Then
-                                MessageBox(MainForm.Handle, 'TooMuch', 'pizda dohera infi', MB_ICONWARNING + MB_OK)
+                                MessageBox(MainForm.Handle, 'Введите путь к другому файлу', 'В файле есть лишняя информация', MB_ICONWARNING + MB_OK)
                             Else
-                                MessageBox(MainForm.Handle, 'FileFatErr', 'pizda ne assignitsya', MB_ICONWARNING + MB_OK);
+                                MessageBox(MainForm.Handle, 'Введите путь к другому файлу', 'Ошибка при назначении файла', MB_ICONWARNING + MB_OK);
 
             End
             Else
-                MessageBox(MainForm.Handle, 'FileFatErr', 'pizda ne assignitsya', MB_ICONWARNING + MB_OK);
+                MessageBox(MainForm.Handle, 'Введите путь к другому файлу', 'Ошибка при назначении файла', MB_ICONWARNING + MB_OK);
             {$I-}
             CloseFile(InputFile);
             {$I+}
@@ -225,7 +227,7 @@ Begin
     Begin
         FilePath := SaveDialog.FileName;
         If Not FilePath.EndsWith('.txt') Then
-            MessageBox(MainForm.Handle, 'TXTERR', 'pizda ne .txt', MB_ICONWARNING + MB_OK)
+            MessageBox(MainForm.Handle, 'Введите путь к другому файлу', 'Файл не ''.txt''', MB_ICONWARNING + MB_OK)
         Else
         Begin
             {$I-}
@@ -243,7 +245,7 @@ Begin
                 IsFileSaved := True;
             End
             Else
-                MessageBox(MainForm.Handle, 'FileErr', 'pizda ne sohranyaetsa', MB_ICONWARNING + MB_OK);
+                MessageBox(MainForm.Handle, 'Введите путь к другому файлу', 'Ошибка при сохранении данных в файл', MB_ICONWARNING + MB_OK);
         End;
         {$I-}
         CloseFile(OutputFile);
